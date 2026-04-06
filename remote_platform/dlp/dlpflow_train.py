@@ -21,10 +21,13 @@ def main() -> None:
     gpu_type = os.environ.get("DLP_GPU_TYPE", "3090").strip()
     image = os.environ.get("DLP_IMAGE", "").strip()
     pre_process = os.environ.get("DLP_PRE_PROCESS", "").strip()
+    entrypoint = os.environ.get(
+        "DLP_ENTRYPOINT", "bash remote_platform/dlp/run_remote_train.sh"
+    ).strip()
 
     envs = {
         "PIWIFI_REMOTE_REPO_DIR": project_dir,
-        "PIWIFI_CONFIG_PATH": os.environ.get("PIWIFI_CONFIG_PATH", "configs/wifi/petr_wifi.py"),
+        "PIWIFI_CONFIG_PATH": os.environ.get("PIWIFI_CONFIG_PATH", "configs/wifi/petr_wifi_remote.py"),
         "PIWIFI_DATASET_ROOT": os.environ.get("PIWIFI_DATASET_ROOT", f"{project_dir}/data/wifipose"),
         "PIWIFI_WORK_DIR": os.environ.get("PIWIFI_WORK_DIR", f"{project_dir}/work_dirs/remote_train"),
         "PIWIFI_GPUS": os.environ.get("PIWIFI_GPUS", str(gpu_num)),
@@ -38,6 +41,11 @@ def main() -> None:
         "PIWIFI_RESUME_FROM",
         "PIWIFI_CFG_OPTIONS",
         "PIWIFI_REMOTE_INSTALL_DEPS",
+        "PIWIFI_SEED",
+        "PIWIFI_DETERMINISTIC",
+        "PIWIFI_TRAIN_LIST_FILE",
+        "PIWIFI_VAL_LIST_FILE",
+        "PIWIFI_VAL_MAX_SAMPLES",
     ]:
         value = os.environ.get(key, "").strip()
         if value:
@@ -49,7 +57,7 @@ def main() -> None:
 
     generate_kwargs = {
         "gpu_num": gpu_num,
-        "entrypoint": "bash remote_platform/dlp/run_remote_train.sh",
+        "entrypoint": entrypoint,
         "gpu_type": gpu_type,
         "envs": envs,
         "custom_volumes": [{"path": remote_nfs_path, "mode": "rw"}],

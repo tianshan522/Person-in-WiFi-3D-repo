@@ -13,6 +13,7 @@ import h5py
 @DATASETS.register_module()
 class WifiPoseDataset(dataset):
     CLASSES = ('person', )
+
     def __init__(self, dataset_root, pipeline, mode, **kwargs):
         list_file = kwargs.pop('list_file', None)
         self.data_root = dataset_root
@@ -27,10 +28,18 @@ class WifiPoseDataset(dataset):
         results['seg_fields'] = []
         results['img_prefix'] = self.img_dir
 
+    def _get_sample_paths(self, data_name):
+        csi_path = os.path.join(self.data_root, 'csi', f'{data_name}.mat')
+        keypoint_path = os.path.join(self.data_root, 'keypoint', f'{data_name}.npy')
+        return csi_path, keypoint_path
+
+    def _load_keypoints(self, data_name):
+        _, keypoint_path = self._get_sample_paths(data_name)
+        return torch.FloatTensor(np.load(keypoint_path))
+
     def get_item_single_frame(self,index): 
         data_name = self.filename_list[index]
-        csi_path = os.path.join(self.data_root,'csi',(str(data_name)+'.mat'))
-        keypoint_path = os.path.join(self.data_root,'keypoint',(str(data_name)+'.npy'))
+        csi_path, _ = self._get_sample_paths(data_name)
         
         '''csi =  io.loadmat(csi_path)['csi_out']
         csi = np.array(csi)
@@ -64,10 +73,7 @@ class WifiPoseDataset(dataset):
         #csi = torch.cat((csi_amp, csi_ph), 2)
         csi = torch.FloatTensor(csi).permute(0,1,3,2)
         
-
-        keypoint = np.array(np.load(keypoint_path))
-        #keypoint = self.keypoint_process(keypoint)
-        keypoint = torch.FloatTensor(keypoint) # keypoint tensor: (N*14*3)
+        keypoint = self._load_keypoints(data_name)
 
         numOfPerson = keypoint.shape[0]
         gt_labels = np.zeros(numOfPerson, dtype=np.int64) #label (N,)
@@ -78,8 +84,7 @@ class WifiPoseDataset(dataset):
     
     def get_item_single_frame_limit(self,index): 
         data_name = self.filename_list[index]
-        csi_path = os.path.join(self.data_root,'csi',(str(data_name)+'.mat'))
-        keypoint_path = os.path.join(self.data_root,'keypoint',(str(data_name)+'.npy'))
+        csi_path, _ = self._get_sample_paths(data_name)
         
         csi =  io.loadmat(csi_path)['csi_out']
         csi = np.array(csi)
@@ -103,10 +108,7 @@ class WifiPoseDataset(dataset):
         #csi = np.concatenate((csi_amp, csi_ph), axis=3)
         #csi = torch.FloatTensor(csi)
         
-
-        keypoint = np.array(np.load(keypoint_path))
-        #keypoint = self.keypoint_process(keypoint)
-        keypoint = torch.FloatTensor(keypoint) # keypoint tensor: (N*14*3)
+        keypoint = self._load_keypoints(data_name)
 
         numOfPerson = keypoint.shape[0]
         gt_labels = np.zeros(numOfPerson, dtype=np.int64) #label (N,)
@@ -223,9 +225,8 @@ class WifiPoseDataset(dataset):
         mpjpe_v_list = []
         mpjpe_d_list = []
         for i in range(len(results)):
-            info = self.get_item_single_frame(i)
-            gt_keypoints = info['gt_keypoints']
-            data_name = info['img_name']
+            data_name = self.filename_list[i]
+            gt_keypoints = self._load_keypoints(data_name)
             det_bboxes, det_keypoints = results[i]
             for label in range(len(det_keypoints)):
                 kpt_pred = det_keypoints[label]
