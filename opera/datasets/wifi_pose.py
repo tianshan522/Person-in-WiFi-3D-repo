@@ -14,10 +14,13 @@ import h5py
 class WifiPoseDataset(dataset):
     CLASSES = ('person', )
     def __init__(self, dataset_root, pipeline, mode, **kwargs):
-        
+        list_file = kwargs.pop('list_file', None)
         self.data_root = dataset_root
         self.pipeline = Compose(pipeline)
-        self.filename_list = self.load_file_name_list(os.path.join(self.data_root, mode + '_data_list.txt'))
+        if list_file is None:
+            list_file = os.path.join(self.data_root, mode + '_data_list.txt')
+        self.list_file = list_file
+        self.filename_list = self.load_file_name_list(self.list_file)
         self._set_group_flag()
         
     def pre_pipeline(self, results):
@@ -33,7 +36,8 @@ class WifiPoseDataset(dataset):
         csi = np.array(csi)
         csi = csi.astype(np.complex128)'''
         
-        csi = h5py.File(csi_path)['csi_out'].value
+        with h5py.File(csi_path, 'r') as csi_file:
+            csi = csi_file['csi_out'][()]
         csi = csi['real'] + csi['imag']*1j
         csi = np.array(csi).transpose(3,2,1,0)
         csi = csi.astype(np.complex128)
