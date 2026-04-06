@@ -10,4 +10,4 @@ opencv-python==4.13.0.92
 terminaltables==3.1.10
 six==1.16.0
 addict==2.4.0
-yapf<0.40
+yapf==0.32.0
