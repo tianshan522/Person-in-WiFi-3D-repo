@@ -1,0 +1,13 @@
+numpy
+scipy
+PyWavelets
+h5py
+matplotlib
+tqdm
+pyyaml
+tensorboard
+opencv-python
+terminaltables
+six
+addict
+yapf<0.40

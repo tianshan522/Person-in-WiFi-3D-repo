@@ -28,6 +28,18 @@ Links to our Code   : [Person-in-WiFi 3D repo](https://github.com/aiotgroup/Pers
 
 Please see [get_started.md](docs/get_started.md) for the basic usage of Opera.
 
+### Remote Training on macOS
+
+If your local machine is macOS and the actual training runs on a remote Linux GPU platform, use the DLP helper workflow under `remote_platform/dlp/`.
+
+The workflow covers:
+
+- mounting the remote NFS volume on macOS
+- syncing the repository and dataset to the cloud volume
+- submitting smoke tests and training jobs to DLP
+
+See `remote_platform/dlp/README.md` for the full process.
+
 ## Acknowledgement
 
 Opera is an open source project built upon [OpenMMLab](https://github.com/open-mmlab/). We appreciate all the contributors who implement this flexible and efficient toolkits.
