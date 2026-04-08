@@ -8,6 +8,8 @@
 
 所有新增文件都集中在 `remote_platform/dlp/`，不改现有 `tools/` 和 `configs/` 主流程。
 
+当前请优先以 `docs/远端训练说明.md` 作为实际操作说明，本 README 更偏向说明 `remote_platform/dlp/` 目录本身的职责。
+
 ## 1. 本地挂载云盘
 
 ```bash
@@ -94,8 +96,8 @@ DLP_REMOTE_NFS_PATH=/cloud/tmp/yc \
 DLP_REMOTE_REPO_DIR=/cloud/tmp/yc/Person-in-WiFi-3D-repo \
 PIWIFI_DATASET_ROOT=/cloud/tmp/yc/Person-in-WiFi-3D-repo/data/wifipose \
 PIWIFI_REMOTE_PYTHON=/cloud/tmp/yc/miniconda3/envs/piwifi/bin/python \
-PIWIFI_CONFIG_PATH=configs/wifi/petr_wifi.py \
-PIWIFI_WORK_DIR=/cloud/tmp/yc/Person-in-WiFi-3D-repo/work_dirs/petr_wifi_remote \
+PIWIFI_CONFIG_PATH=configs/wifi/petr_wifi_remote.py \
+PIWIFI_WORK_DIR=/cloud/tmp/yc/Person-in-WiFi-3D-repo/work_dirs/remote_train_full_resume20epochs_20260406 \
 python remote_platform/dlp/dlpflow_train.py
 ```
 
@@ -109,7 +111,7 @@ PIWIFI_REMOTE_PYTHON=/cloud/tmp/yc/miniconda3/envs/piwifi/bin/python \
 DLP_GPU_NUM=2 \
 PIWIFI_GPUS=2 \
 PIWIFI_USE_DIST=1 \
-PIWIFI_CONFIG_PATH=configs/wifi/petr_wifi.py \
+PIWIFI_CONFIG_PATH=configs/wifi/petr_wifi_remote.py \
 PIWIFI_WORK_DIR=/cloud/tmp/yc/Person-in-WiFi-3D-repo/work_dirs/petr_wifi_remote_2gpu \
 python remote_platform/dlp/dlpflow_train.py
 ```
@@ -156,3 +158,16 @@ PIWIFI_REMOTE_INSTALL_DEPS=1
 - `pip install -e .`
 
 更稳妥的做法仍然是提前在你们的远端镜像或 conda 环境里装好 `torch` 和 CUDA 匹配版本，再用这套脚本负责挂载、同步和提交流程。
+
+## 8. 当前这套目录中最常用的文件
+
+- `dlpflow_train.py`
+  - DLP 训练任务提交入口
+- `run_remote_train.sh`
+  - 远端训练主脚本
+- `validate_remote_dataset.py`
+  - 训练前数据校验
+- `sync_to_cloud_nfs.sh`
+  - macOS 本地仓库到挂载目录的同步
+- `copy_best_checkpoint.sh`
+  - 在远端 NFS 内复制 best checkpoint 的辅助脚本

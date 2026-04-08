@@ -17,6 +17,10 @@ from opera.datasets import build_dataloader, build_dataset
 from opera.models import build_model
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_CHECKPOINT = str(REPO_ROOT / 'checkpoints' / 'best_mpjpe_epoch_10_20260408.pth')
+
+
 SKELETON_EDGES = [
     (0, 1), (1, 2), (2, 5), (3, 0), (4, 2), (5, 7), (6, 3),
     (7, 3), (8, 4), (9, 5), (10, 6), (11, 7), (12, 9), (13, 11)
@@ -28,7 +32,7 @@ def parse_args():
         description='Run WiFiPose inference and save per-sample visualizations.'
     )
     parser.add_argument('--config', default='configs/wifi/petr_wifi_remote.py')
-    parser.add_argument('--checkpoint', required=True)
+    parser.add_argument('--checkpoint', default=DEFAULT_CHECKPOINT)
     parser.add_argument('--dataset-root', required=True)
     parser.add_argument('--mode', default='test', choices=['train', 'test'])
     parser.add_argument('--list-file', default=None)

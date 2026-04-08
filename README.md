@@ -40,6 +40,21 @@ The workflow covers:
 
 See `remote_platform/dlp/README.md` for the full process.
 
+### Project Status in This Repo Copy
+
+This repo copy has already been adapted for a macOS local machine + remote Linux GPU workflow.
+
+Current practical entry docs:
+
+- remote training: `docs/远端训练说明.md`
+- local inference and visualization: `docs/本地推理可视化说明.md`
+- staged summary of recent progress: `docs/阶段性进展总结.md`
+- DLP helper details: `remote_platform/dlp/README.md`
+
+Current verified local inference checkpoint:
+
+- `checkpoints/best_mpjpe_epoch_10_20260408.pth`
+
 ## Acknowledgement
 
 Opera is an open source project built upon [OpenMMLab](https://github.com/open-mmlab/). We appreciate all the contributors who implement this flexible and efficient toolkits.
